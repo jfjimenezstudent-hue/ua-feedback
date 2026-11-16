@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UA Office Feedback</title>
+<meta name="theme-color" content="#0f766e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="UA Feedback">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f5f6f8;--surface:#fff;--ink:#14213d;--muted:#5b6478;--line:#d9dde6;--accent:#0f766e;--accent-ink:#fff;--soft:#e3f2f0;
+  --l5:#0f766e;--l4:#4d8f2f;--l3:#b7791f;--l2:#c2571a;--l1:#b42318;
+  font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1424;--surface:#161e33;--ink:#eef1f8;--muted:#a3abc0;--line:#2b3552;--accent:#3cc0b4;--accent-ink:#06211e;--soft:#12322f;
+  --l5:#3cc0b4;--l4:#8fd16a;--l3:#e5b04a;--l2:#f08a4b;--l1:#ff7b6e}}
+:root[data-theme="dark"]{
+  --bg:#0e1424;--surface:#161e33;--ink:#eef1f8;--muted:#a3abc0;--line:#2b3552;--accent:#3cc0b4;--accent-ink:#06211e;--soft:#12322f;
+  --l5:#3cc0b4;--l4:#8fd16a;--l3:#e5b04a;--l2:#f08a4b;--l1:#ff7b6e}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.5;min-height:100%}
+main{max-width:720px;margin:0 auto;padding:20px 16px 64px}
+h1{font-size:clamp(1.7rem,5vw,2.3rem);font-weight:800;letter-spacing:-.02em;margin:8px 0 4px}
+h2{font-size:1.15rem;margin:0 0 12px}
+p.lead{color:var(--muted);margin:0 0 20px;max-width:56ch}
+nav{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:24px}
+nav button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px;font:inherit;font-weight:600;color:var(--muted);cursor:pointer}
+nav button[aria-selected="true"]{color:var(--ink);border-color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:16px}
+label,.q{display:block;font-weight:600;margin-bottom:8px}
+select,input,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea{min-height:84px;resize:vertical}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.scale button{font:inherit;font-weight:800;font-size:1.15rem;padding:12px 0;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.scale button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.ends{display:flex;justify-content:space-between;color:var(--muted);font-size:.8rem;margin-top:4px}
+.question{padding:14px 0;border-top:1px solid var(--line)}
+.question:first-of-type{border-top:0}
+.meter{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.meter .num{font-size:2rem;font-weight:800;min-width:3.2ch}
+.bar{flex:1;height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+.badge{font-weight:700;font-size:.85rem;white-space:nowrap}
+.btn{font:inherit;font-weight:700;padding:12px 20px;border-radius:8px;border:0;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.btn.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.msg{margin:10px 0 0;font-size:.9rem;color:var(--muted)}.msg.err{color:var(--l1)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+tr.click{cursor:pointer}tr.click:hover{background:var(--soft)}
+.cm{border-left:3px solid var(--line);padding:2px 12px;margin:10px 0}
+.cm small{color:var(--muted)}
+.hidden{display:none}
+.lock{font-size:.85rem;color:var(--muted)}
+/* Optional background: put background.jpg next to this file */
+body.has-bg{background:linear-gradient(rgba(10,20,40,.55),rgba(10,20,40,.55)),url("background.jpg") center/cover fixed no-repeat}
+body.has-bg h1,body.has-bg p.lead,body.has-bg .lock{color:#fff}
+body.has-bg nav button{color:#dfe6f5}
+body.has-bg nav button[aria-selected="true"]{color:#fff}
+.install{display:none}.install.show{display:inline-block;margin:0 0 16px}
+</style>
+</head>
+<body>
+<main>
+  <h1>UA office feedback</h1>
+  <p class="lead">Log in with your student account to tell us how an office or facility served you. Your response is saved without your student ID and encrypted with AES-256.</p>
+  <button class="btn ghost install" id="install">Install as app</button>
+  <nav role="tablist">
+    <button role="tab" id="tab-give" aria-selected="true">Give feedback</button>
+    <button role="tab" id="tab-admin" aria-selected="false">Administrator</button>
+  </nav>
+
+  <section id="give">
+    <div id="sgate" class="card">
+      <h2 id="sTitle">Student login</h2>
+      <label for="sid">Student ID</label><input id="sid" autocomplete="username">
+      <label for="spw" style="margin-top:12px">Password</label><input id="spw" type="password" autocomplete="current-password">
+      <div id="sconfirm" class="hidden">
+        <label for="spw2" style="margin-top:12px">Confirm password</label><input id="spw2" type="password" autocomplete="new-password">
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="sgo">Log in</button>
+        <button class="btn ghost" id="sswitch">Create student account</button>
+      </div>
+      <p class="msg" id="smsg"></p>
+    </div>
+
+    <div id="sform" class="hidden">
+    <div class="row" style="justify-content:space-between;margin-bottom:12px">
+      <span class="msg" id="swho" style="margin:0"></span>
+      <button class="btn ghost" id="slogout">Log out</button>
+    </div>
+    <div class="card">
+      <label for="office">Office or facility</label>
+      <select id="office"></select>
+    </div>
+    <div class="meter" aria-live="polite">
+      <div class="num" id="avg">–</div>
+      <div class="bar"><i id="barfill"></i></div>
+      <div class="badge" id="level">Rate to begin</div>
+    </div>
+    <div class="card" id="qs"></div>
+    <div class="card">
+      <label for="comment">Comment (optional)</label>
+      <textarea id="comment" maxlength="500" placeholder="Anything else we should know?"></textarea>
+    </div>
+    <div class="row"><button class="btn" id="submit">Submit feedback</button></div>
+    <p class="msg" id="gmsg"></p>
+    </div>
+  </section>
+
+  <section id="admin" class="hidden">
+    <div id="auth" class="card">
+      <h2 id="authTitle">Administrator login</h2>
+      <label for="u">Username</label><input id="u" autocomplete="username">
+      <label for="p" style="margin-top:12px">Password</label><input id="p" type="password" autocomplete="current-password">
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="login">Log in</button>
+        <button class="btn ghost" id="toCreate">Create account</button>
+      </div>
+      <p class="msg" id="amsg"></p>
+    </div>
+    <div id="dash" class="hidden">
+      <div class="row" style="justify-content:space-between;margin-bottom:12px">
+        <h2 style="margin:0">Feedback summary</h2>
+        <div class="row"><button class="btn ghost" id="addAdmin">Add admin</button><button class="btn ghost" id="logout">Log out</button></div>
+      </div>
+      <div class="card tablewrap" id="summary"></div>
+      <div class="card hidden" id="detail"></div>
+    </div>
+  </section>
+  <p class="lock">Prototype: data stays in this browser only. The encryption key is stored next to the data, so this is not production security.</p>
+</main>
+
+<script>
+const OFFICES=["Registrar’s Office","Library","Cashier’s Office","Guidance and Counseling Office","Clinic","Admissions Office","Student Affairs Office","IT Services","Canteen / Cafeteria"];
+const QUESTIONS=["The staff were courteous and respectful.","My concern was resolved in a reasonable amount of time.","The staff were knowledgeable and helpful.","The office or facility was clean and well organized.","I would recommend this office to other students."];
+const LEVELS=["Excellent","Very Satisfactory","Satisfactory","Needs Improvement","Poor"];
+const $=s=>document.querySelector(s);
+const mem={};
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return mem[k]??null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){mem[k]=v}}};
+const b64=u=>btoa(String.fromCharCode(...new Uint8Array(u)));
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+
+/* ---------- AES-256-GCM (Web Crypto) ---------- */
+let _key;
+async function getKey(){
+  if(_key)return _key;
+  let raw=store.get("ua_key");
+  if(!raw){
+    const k=await crypto.subtle.generateKey({name:"AES-GCM",length:256},true,["encrypt","decrypt"]);
+    raw=b64(await crypto.subtle.exportKey("raw",k));store.set("ua_key",raw);
+  }
+  _key=await crypto.subtle.importKey("raw",unb64(raw),"AES-GCM",false,["encrypt","decrypt"]);
+  return _key;
+}
+async function enc(obj){
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},await getKey(),new TextEncoder().encode(JSON.stringify(obj)));
+  const out=new Uint8Array(12+ct.byteLength);out.set(iv);out.set(new Uint8Array(ct),12);
+  return b64(out);
+}
+async function dec(token){
+  const raw=unb64(token);
+  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:raw.slice(0,12)},await getKey(),raw.slice(12));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+async function loadAll(){
+  const tokens=JSON.parse(store.get("ua_feedback")||"[]"),out=[];
+  for(const t of tokens){try{out.push(await dec(t))}catch(e){}}
+  return out;
+}
+
+/* ---------- Rating logic ---------- */
+const classify=a=>a>=4.5?LEVELS[0]:a>=3.5?LEVELS[1]:a>=2.5?LEVELS[2]:a>=1.5?LEVELS[3]:LEVELS[4];
+const levelColor=a=>a>=4.5?"var(--l5)":a>=3.5?"var(--l4)":a>=2.5?"var(--l3)":a>=1.5?"var(--l2)":"var(--l1)";
+const mean=a=>a.reduce((x,y)=>x+y,0)/a.length;
+const r2=n=>Math.round(n*100)/100;
+
+/* ---------- Feedback form ---------- */
+const answers=new Array(QUESTIONS.length+1).fill(0); // index 0 = overall
+OFFICES.forEach(o=>{const e=document.createElement("option");e.textContent=o;$("#office").append(e)});
+function buildScale(i,text,ends){
+  const d=document.createElement("div");d.className="question";
+  d.innerHTML=`<span class="q"></span><div class="scale" role="group"></div><div class="ends"><span>${ends[0]}</span><span>${ends[1]}</span></div>`;
+  d.querySelector(".q").textContent=text;
+  const g=d.querySelector(".scale");
+  for(let v=1;v<=5;v++){
+    const b=document.createElement("button");b.type="button";b.textContent=v;b.setAttribute("aria-pressed","false");
+    b.setAttribute("aria-label",`${text} Rating ${v} of 5`);
+    b.onclick=()=>{answers[i]=v;[...g.children].forEach((c,j)=>c.setAttribute("aria-pressed",j+1===v));updateMeter()};
+    g.append(b);
+  }
+  $("#qs").append(d);
+}
+buildScale(0,"Overall rating",["Poor","Excellent"]);
+QUESTIONS.forEach((q,i)=>buildScale(i+1,q,["Very dissatisfied","Very satisfied"]));
+function updateMeter(){
+  const got=answers.filter(Boolean);
+  if(!got.length){$("#avg").textContent="–";$("#level").textContent="Rate to begin";$("#barfill").style.width="0";return}
+  const a=r2(mean(got));
+  $("#avg").textContent=a.toFixed(2);$("#level").textContent=classify(a);
+  $("#level").style.color=$("#barfill").style.background=levelColor(a);
+  $("#barfill").style.width=(a/5*100)+"%";
+}
+$("#submit").onclick=async()=>{
+  const m=$("#gmsg");m.className="msg";
+  if(!student){m.textContent="Please log in with your student account first.";m.className="msg err";return}
+  if(answers.some(v=>!v)){m.textContent="Please answer every rating question before submitting.";m.className="msg err";return}
+  const a=r2(mean(answers));
+  const rec={t:new Date().toISOString(),office:$("#office").value,overall:answers[0],answers:answers.slice(1),average:a,level:classify(a),comment:$("#comment").value.trim()};
+  const list=JSON.parse(store.get("ua_feedback")||"[]");
+  list.push(await enc(rec));store.set("ua_feedback",JSON.stringify(list));
+  m.textContent=`Thank you. Your average rating was ${a.toFixed(2)} (${rec.level}). Your feedback was saved encrypted.`;
+  answers.fill(0);$("#comment").value="";
+  document.querySelectorAll(".scale button").forEach(b=>b.setAttribute("aria-pressed","false"));updateMeter();
+};
+
+/* ---------- Tabs ---------- */
+function show(tab){
+  $("#give").classList.toggle("hidden",tab!=="give");$("#admin").classList.toggle("hidden",tab!=="admin");
+  $("#tab-give").setAttribute("aria-selected",tab==="give");$("#tab-admin").setAttribute("aria-selected",tab==="admin");
+}
+$("#tab-give").onclick=()=>show("give");$("#tab-admin").onclick=()=>show("admin");
+
+/* ---------- Admin accounts (PBKDF2 hashes) ---------- */
+const admins=()=>JSON.parse(store.get("ua_admins")||"{}");
+async function hashPw(pw,salt){
+  const k=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveBits"]);
+  return b64(await crypto.subtle.deriveBits({name:"PBKDF2",salt,iterations:210000,hash:"SHA-256"},k,256));
+}
+let mode="login",loggedIn=false;
+function authMode(m){
+  mode=m;const none=!Object.keys(admins()).length;
+  if(none&&m==="login")m=mode="create";
+  $("#authTitle").textContent=m==="create"?(none?"Create the first administrator":"Create administrator account"):"Administrator login";
+  $("#login").textContent=m==="create"?"Create account":"Log in";
+  $("#toCreate").classList.toggle("hidden",m==="create"||false);
+  $("#amsg").textContent="";$("#amsg").className="msg";
+}
+function err(t){$("#amsg").textContent=t;$("#amsg").className="msg err"}
+$("#toCreate").onclick=()=>{
+  if(!loggedIn&&Object.keys(admins()).length){err("Log in as an administrator first, then choose Add admin.");return}
+  authMode("create");
+};
+$("#login").onclick=async()=>{
+  const u=$("#u").value.trim().toLowerCase(),p=$("#p").value,all=admins();
+  if(mode==="create"){
+    if(u.length<3)return err("Username must be at least 3 characters.");
+    if(p.length<8)return err("Password must be at least 8 characters.");
+    if(all[u])return err("That username already exists.");
+    const salt=crypto.getRandomValues(new Uint8Array(16));
+    all[u]={salt:b64(salt),hash:await hashPw(p,salt)};store.set("ua_admins",JSON.stringify(all));
+    $("#u").value=$("#p").value="";
+    if(loggedIn){openDash();$("#amsg").textContent="";return}
+    authMode("login");$("#amsg").textContent=`Account “${u}” created. Log in to continue.`;return;
+  }
+  const acct=all[u];
+  const h=await hashPw(p,acct?unb64(acct.salt):new Uint8Array(16));
+  if(!acct||h!==acct.hash)return err("Incorrect username or password.");
+  loggedIn=true;$("#u").value=$("#p").value="";openDash();
+};
+$("#logout").onclick=()=>{loggedIn=false;$("#dash").classList.add("hidden");$("#auth").classList.remove("hidden");authMode("login")};
+$("#addAdmin").onclick=()=>{$("#dash").classList.add("hidden");$("#auth").classList.remove("hidden");authMode("create")};
+
+/* ---------- Student accounts (PBKDF2 hashes) ---------- */
+const students=()=>JSON.parse(store.get("ua_students")||"{}");
+let sMode="login",student=null;
+function sMsg(t,bad){const m=$("#smsg");m.textContent=t;m.className="msg"+(bad?" err":"")}
+function sSet(m){
+  sMode=m;const reg=m==="register";
+  $("#sTitle").textContent=reg?"Create student account":"Student login";
+  $("#sgo").textContent=reg?"Create account":"Log in";
+  $("#sswitch").textContent=reg?"Back to login":"Create student account";
+  $("#sconfirm").classList.toggle("hidden",!reg);
+  $("#spw").autocomplete=reg?"new-password":"current-password";
+  sMsg("");
+}
+function sEnter(){
+  $("#sgate").classList.add("hidden");$("#sform").classList.remove("hidden");
+  $("#swho").textContent="Logged in as "+student;$("#gmsg").textContent="";
+}
+$("#sswitch").onclick=()=>sSet(sMode==="login"?"register":"login");
+$("#sgo").onclick=async()=>{
+  const id=$("#sid").value.trim().toLowerCase(),pw=$("#spw").value,all=students();
+  if(!/^[a-z0-9-]{4,20}$/.test(id))return sMsg("Student ID must be 4 to 20 letters, numbers or dashes.",true);
+  if(sMode==="register"){
+    if(pw.length<8)return sMsg("Password must be at least 8 characters.",true);
+    if(pw!==$("#spw2").value)return sMsg("Passwords do not match.",true);
+    if(all[id])return sMsg("That student ID already has an account.",true);
+    const salt=crypto.getRandomValues(new Uint8Array(16));
+    all[id]={salt:b64(salt),hash:await hashPw(pw,salt)};store.set("ua_students",JSON.stringify(all));
+    $("#spw").value=$("#spw2").value="";sSet("login");sMsg("Account created. Log in to continue.");return;
+  }
+  const acct=all[id];
+  const h=await hashPw(pw,acct?unb64(acct.salt):new Uint8Array(16));
+  if(!acct||h!==acct.hash)return sMsg("Incorrect student ID or password.",true);
+  student=id;$("#sid").value=$("#spw").value="";sEnter();
+};
+$("#slogout").onclick=()=>{student=null;$("#sform").classList.add("hidden");$("#sgate").classList.remove("hidden");sSet("login")};
+sSet("login");
+
+/* ---------- Admin dashboard ---------- */
+let records=[];
+async function openDash(){
+  $("#auth").classList.add("hidden");$("#dash").classList.remove("hidden");$("#detail").classList.add("hidden");
+  records=await loadAll();
+  const box=$("#summary");
+  if(!records.length){box.innerHTML="<p class='msg'>No feedback yet. Responses appear here after someone submits the form.</p>";return}
+  const by={};records.forEach(r=>(by[r.office]??=[]).push(r));
+  const row=(n,g,click)=>{const a=r2(mean(g.map(r=>r.average)));
+    return `<tr ${click?`class="click" tabindex="0" data-o="${encodeURIComponent(n)}"`:""}><td>${click?"":"<b>"}${esc(n)}${click?"":"</b>"}</td><td>${g.length}</td><td>${a.toFixed(2)}</td><td style="color:${levelColor(a)};font-weight:700">${classify(a)}</td></tr>`};
+  box.innerHTML=`<table><thead><tr><th>Office</th><th>Responses</th><th>Average</th><th>Classification</th></tr></thead><tbody>${Object.keys(by).sort().map(o=>row(o,by[o],true)).join("")}${row("All offices",records,false)}</tbody></table><p class="msg">Select an office for details.</p>`;
+  box.querySelectorAll("tr.click").forEach(tr=>{const go=()=>detail(decodeURIComponent(tr.dataset.o),by);tr.onclick=go;tr.onkeydown=e=>{if(e.key==="Enter")go()}});
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function detail(o,by){
+  const g=by[o],d=$("#detail");d.classList.remove("hidden");
+  const dist=LEVELS.map(l=>`<tr><td>${l}</td><td>${g.filter(r=>r.level===l).length}</td></tr>`).join("");
+  const qs=QUESTIONS.map((q,i)=>`<tr><td style="white-space:normal">${esc(q)}</td><td>${r2(mean(g.map(r=>r.answers[i]))).toFixed(2)}</td></tr>`).join("");
+  const cm=g.filter(r=>r.comment).map(r=>`<div class="cm">${esc(r.comment)}<br><small>${new Date(r.t).toLocaleString()} · average ${r.average.toFixed(2)}</small></div>`).join("")||"<p class='msg'>No comments.</p>";
+  d.innerHTML=`<h2>${esc(o)} (${g.length} responses)</h2><p>Mean overall rating: <b>${r2(mean(g.map(r=>r.overall))).toFixed(2)}</b></p>
+  <div class="tablewrap"><table><thead><tr><th>Question</th><th>Mean</th></tr></thead><tbody>${qs}</tbody></table></div>
+  <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Classification</th><th>Count</th></tr></thead><tbody>${dist}</tbody></table></div>
+  <h2 style="margin-top:18px">Comments</h2>${cm}`;
+  d.scrollIntoView({behavior:"smooth",block:"start"});
+}
+authMode("login");
+
+/* ---------- App features ---------- */
+(function(){
+  const img=new Image();img.onload=()=>document.body.classList.add("has-bg");img.src="background.jpg";
+  let deferred;
+  window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;$("#install").classList.add("show")});
+  $("#install").onclick=async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;$("#install").classList.remove("show")};
+  window.addEventListener("appinstalled",()=>$("#install").classList.remove("show"));
+  if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
+})();
+</script>
+</body>
+</html>
