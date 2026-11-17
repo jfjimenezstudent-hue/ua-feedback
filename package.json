@@ -1,0 +1,13 @@
+{
+  "name": "ua-office-feedback",
+  "version": "1.0.0",
+  "private": true,
+  "description": "UA Office Feedback and Satisfaction System (Node.js + SQLite, AES-256 encrypted feedback)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server.js"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}
