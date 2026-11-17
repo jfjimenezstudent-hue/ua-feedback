@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UA Office Feedback</title>
+<meta name="theme-color" content="#0f766e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="UA Feedback">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>UA office feedback</h1>
+  <p class="lead">Log in with your student account to tell us how an office or facility served you. Your response is saved without your student ID and encrypted with AES-256.</p>
+  <button class="btn ghost install" id="install" type="button">Install as app</button>
+  <nav role="tablist">
+    <button role="tab" id="tab-give" aria-selected="true">Give feedback</button>
+    <button role="tab" id="tab-admin" aria-selected="false">Administrator</button>
+  </nav>
+
+  <section id="give">
+    <div id="sgate" class="card">
+      <h2 id="sTitle">Student login</h2>
+      <label for="sid">Student ID</label><input id="sid" autocomplete="username">
+      <label for="spw" style="margin-top:12px">Password</label><input id="spw" type="password" autocomplete="current-password">
+      <div id="sconfirm" class="hidden">
+        <label for="spw2" style="margin-top:12px">Confirm password</label><input id="spw2" type="password" autocomplete="new-password">
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="sgo" type="button">Log in</button>
+        <button class="btn ghost" id="sswitch" type="button">Create student account</button>
+      </div>
+      <p class="msg" id="smsg"></p>
+    </div>
+
+    <div id="sform" class="hidden">
+      <div class="row" style="justify-content:space-between;margin-bottom:12px">
+        <span class="msg" id="swho" style="margin:0"></span>
+        <button class="btn ghost" id="slogout" type="button">Log out</button>
+      </div>
+      <div class="card">
+        <label for="office">Office or facility</label>
+        <select id="office"></select>
+      </div>
+      <div class="meter" aria-live="polite">
+        <div class="num" id="avg">–</div>
+        <div class="bar"><i id="barfill"></i></div>
+        <div class="badge" id="level">Rate to begin</div>
+      </div>
+      <div class="card" id="qs"></div>
+      <div class="card">
+        <label for="comment">Comment (optional)</label>
+        <textarea id="comment" maxlength="500" placeholder="Anything else we should know?"></textarea>
+      </div>
+      <div class="row"><button class="btn" id="submit" type="button">Submit feedback</button></div>
+      <p class="msg" id="gmsg"></p>
+    </div>
+  </section>
+
+  <section id="admin" class="hidden">
+    <div id="auth" class="card">
+      <h2>Administrator login</h2>
+      <label for="u">Username</label><input id="u" autocomplete="username">
+      <label for="p" style="margin-top:12px">Password</label><input id="p" type="password" autocomplete="current-password">
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="login" type="button">Log in</button>
+      </div>
+      <p class="msg" id="amsg"></p>
+      <p class="msg">Administrator accounts are created by the site owner.</p>
+    </div>
+    <div id="dash" class="hidden">
+      <div class="row" style="justify-content:space-between;margin-bottom:12px">
+        <h2 style="margin:0">Feedback summary</h2>
+        <div class="row">
+          <a class="btn ghost" id="dlCsv" href="/api/admin/export.csv" download>Download for Excel (.csv)</a>
+          <a class="btn ghost" id="dlJson" href="/api/admin/export.json" download>Download backup (.json)</a>
+          <button class="btn ghost" id="addAdmin" type="button">Add admin</button>
+          <button class="btn ghost" id="logout" type="button">Log out</button>
+        </div>
+      </div>
+      <div class="card hidden" id="adminForm">
+        <h2>New administrator</h2>
+        <div class="admin-form">
+          <input id="nu" placeholder="Username" autocomplete="off">
+          <input id="np" type="password" placeholder="Password (min 8 characters)" autocomplete="new-password">
+          <div class="row"><button class="btn" id="createAdmin" type="button">Create administrator</button></div>
+        </div>
+        <p class="msg" id="nmsg"></p>
+      </div>
+      <div class="card tablewrap" id="summary"></div>
+      <div class="card hidden" id="detail"></div>
+    </div>
+  </section>
+
+  <section class="card" id="share" style="text-align:center">
+    <h2>Open on your phone</h2>
+    <canvas id="qr" width="0" height="0" style="max-width:100%;height:auto;border-radius:8px" role="img" aria-label="QR code that opens this website"></canvas>
+    <p class="msg" id="qrnote" style="margin-top:10px"></p>
+    <div class="row" style="justify-content:center;margin-top:10px">
+      <button class="btn ghost" id="copyLink" type="button">Copy link</button>
+      <button class="btn ghost" id="saveQr" type="button">Save QR image</button>
+    </div>
+  </section>
+  <p class="lock">Feedback is stored encrypted (AES-256) on the server. Administrator pages need a login.</p>
+</main>
+<script src="qr.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
